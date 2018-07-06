@@ -8,17 +8,17 @@ const request = require('request');
 const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/:id', express.static('public'));
+app.use('/product/:id', express.static('public'));
 app.use(bodyParser.json());
 
 app.listen(port, () => {
-  console.log(`server running at: http://localhost:${port}`);
+  console.log(`proxy server running at port: ${port}`);
 });
 
 
 app.get('/productDetails/:id', (req, res) => {
-  // console.log(`http://localhost:3001${req.url}`)
-  axios.get(`http://18.219.25.187${req.url}`)
+  console.log(`${req.url}`)
+  axios.get(`http://ec2-54-219-171-140.us-west-1.compute.amazonaws.com${req.url}`)
     .then((response) => {
       console.log('this is the response', response.data)
       res.send(response.data);
@@ -28,9 +28,9 @@ app.get('/productDetails/:id', (req, res) => {
     });
 });
 
-app.get('/reviews-module/reviews/:id', (req, res) => {
-  console.log(`http://54.183.143.240${req.url}`);
-  request(`http://54.183.143.240${req.url}`, (error, response, body) => {
+app.get('/reviews-module/reviews/product/:id', (req, res) => {
+  console.log(`http://18.191.180.179${req.url}`);
+  request(`http://18.191.180.179${req.url}`, (error, response, body) => {
     if (error) throw new Error(error);
     res.end(body);
   });
@@ -38,7 +38,7 @@ app.get('/reviews-module/reviews/:id', (req, res) => {
 
 app.put('/reviews-module/reviews', (req, res) => {
   console.log('req.body', req.body);
-  axios.put(`http://54.183.143.240${req.url}`, req.body)
+  axios.put(`http://18.191.180.179${req.url}`, req.body)
     .then(() => {
       res.status(204).end();
     })
@@ -47,8 +47,8 @@ app.put('/reviews-module/reviews', (req, res) => {
     });
 });
 
-app.get('/youMayAlsoLike/:id', (req, res) => {
-  axios.get(`http://18.188.58.255${req.url}`)
+app.get('/product/:id/related', (req, res) => {
+  axios.get(`http://you-may-also-like-load-balancer-1474842517.us-west-1.elb.amazonaws.com${req.url}`)
     .then((response) => {
       console.log('this is the response', response.data)
       res.send(response.data);
@@ -58,8 +58,9 @@ app.get('/youMayAlsoLike/:id', (req, res) => {
     });
 });
 
-app.get('/images/:id', (req, res) => {
-  axios.get(`http://138.197.208.221${req.url}`)
+app.get('/product/:id/images', (req, res) => {
+  console.log(`${req.url}`);
+  axios.get(`http://ec2-18-219-118-99.us-east-2.compute.amazonaws.com${req.url}`)
     .then((response) => {
       console.log('this is the response', response.data)
       res.send(response.data);
